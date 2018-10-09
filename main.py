@@ -12,7 +12,7 @@ gray_pixels = pixels[:]
 
 row310 = [0] * w
 
-print("Detecting steganograph")
+print("Processing")
 
 for i in range(0, len(pixels), pixel_byte_width):
     x = int((i/pixel_byte_width) % w)
@@ -38,14 +38,15 @@ for i in range(0, len(pixels), pixel_byte_width):
         alpha_pixels[i+1] = 255
         alpha_pixels[i+2] = 255
 
-    if (pixel[0] != 0 and pixel[0] != 255) or (pixel[1] != 0 and pixel[1] != 255) or (pixel[2] != 0 and pixel[2] != 255):
-        gray_pixels[i+0] = pixel[0]
-        gray_pixels[i+1] = pixel[1]
-        gray_pixels[i+2] = pixel[2]
-    else:
-        gray_pixels[i+0] = 0
-        gray_pixels[i+1] = 0
-        gray_pixels[i+2] = 0
+    if pixel[0] == pixel[1] and pixel[1] == pixel[2]:
+        if pixel[0] > 0 and pixel[0] < 255:
+            gray_pixels[i+0] = round(pixel[0]/255)*255
+            gray_pixels[i+1] = round(pixel[1]/255)*255
+            gray_pixels[i+2] = round(pixel[2]/255)*255
+        #else:
+        #    gray_pixels[i+0] = 0
+        #    gray_pixels[i+1] = 0
+        #    gray_pixels[i+2] = 0
 
 
 print("Saving steganography image")
@@ -56,7 +57,7 @@ writer.write_array(output, alpha_pixels)
 output.close()
 
 
-print("Saving another steganography image")
+print("Saving noise")
 
 output = open('challenge-3.png', 'wb')
 writer = png.Writer(w, h, **metadata)
@@ -74,7 +75,7 @@ row310_message = ''.join([str(chr(b)) if b != 255 else "" for b in row310_bytes]
 
 print(row310_message)
 
-print(hashlib.sha256(row310_message).hexdigest())
+#print(hashlib.sha256(row310_message.encode("ascii")).hexdigest())
 
 
 print("Done")
