@@ -11,6 +11,7 @@ alpha_pixels = pixels[:]
 gray_pixels = pixels[:]
 
 row310 = [0] * w
+col310 = [0] * h
 
 print("Processing")
 
