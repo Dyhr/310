@@ -1,9 +1,16 @@
 from __future__ import absolute_import, unicode_literals
-import puzzles
+import puzzles, OpenSSL
 
 
-puzzles.grid()
-puzzles.alphaMessage()
+#puzzles.grid()
+#puzzles.alphaMessage()
+puzzles.redMessage()
 
-# L503K7CF64C120E89D9D4
 # 310 -> chase
+
+#def comp(s,n):
+#    print(s)
+
+#chars = "LD3CE4075299K80D1FF64"
+#ints = [int(c,36) for c in chars]
+#print(comp(chars,len(chars)))

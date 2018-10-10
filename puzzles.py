@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-import array
+import array, base64, gzippy
 import solve
 
 def grid():
@@ -18,10 +18,8 @@ def alphaMessage():
     w, h, pixels, metadata, byte_width = solve.loadImage('challenge.png')
 
     alpha_pixels = pixels[:]
-    gray_pixels = pixels[:]
 
     row310 = [0] * w
-    col310 = [0] * h
 
 
     print("Processing image")
@@ -41,7 +39,7 @@ def alphaMessage():
 
 
     print("Saving steganography image")
-    solve.saveImage('challenge-2.png', alpha_pixels, w, h, metadata)
+    solve.saveImage('challenge-alpha.png', alpha_pixels, w, h, metadata)
 
 
     print("Row 310 Alpha Message:")
@@ -52,17 +50,58 @@ def alphaMessage():
     row310_message = ''.join([str(chr(b)) if b != 255 else "" for b in row310_bytes])
 
     print(row310_message)
+    
+def redMessage():
+    print("Setting up")
+
+    w, h, pixels, metadata, byte_width = solve.loadImage('challenge.png')
+
+    red_pixels = pixels[:]
+
+    row310_red = [0] * w
+    row310_alpha = [1] * w
+
+
+    print("Processing image")
+
+    def process(i,x,y,pixel):
+        mask_alpha = solve.mask(pixel, ['00000000','00000000','00000000','00000001'])
+        mask_red = solve.mask(pixel, ['00000001','00000000','00000000','00000000'])
+        
+        if mask_alpha[3] == 1 and y == 310:
+            row310_alpha[x] = 0
+
+        if y == 310:
+            row310_red[x] = 1-mask_red[0]
+
+        if pixel[0] != pixel[1] or pixel[0] != pixel[2]:
+            solve.setPixel(red_pixels, i, [0,0,0])
+        else:
+            solve.setPixel(red_pixels, i, [255,255,255])
+            
+    solve.processImage(pixels,byte_width,w,h,process)
+
+
+    print("Saving steganography image")
+    solve.saveImage('challenge-red.png', red_pixels, w, h, metadata)
+
+
+    print("XORing bits.. Resulting base 64:")
+    xor_bits = [row310_red[i] ^ row310_alpha[i] for i in range(0,w)]
+
+    row310_bytes = [int(''.join(str(1-x) for x in xor_bits[i:i+8]), 2) for i in range(0, len(xor_bits), 8)]
+
+    row310_b64 = base64.b64encode(bytes(row310_bytes[:-121]))#''.join([str(chr(b)) for b in row310_bytes])
+    print(str(row310_b64))
+
+    #print([str(chr(b)) if b != 255 else "" for b in row310_bytes])
 
 def noise():
     print("Setting up")
 
     w, h, pixels, metadata, byte_width = solve.loadImage('challenge.png')
 
-    alpha_pixels = pixels[:]
     gray_pixels = pixels[:]
-
-    row310 = [0] * w
-    col310 = [0] * h
 
 
     print("Processing image")
