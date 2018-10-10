@@ -14,7 +14,7 @@ row310 = [0] * w
 col310 = [0] * h
 
 
-print("Processing")
+print("Processing image")
 
 def process(i,x,y,pixel):
     mask = solve.mask(pixel, ['00000000','00000000','00000000','00000001'])
@@ -32,6 +32,16 @@ def process(i,x,y,pixel):
             solve.setPixel(gray_pixels, i, [round(pixel[0]/255)*255, round(pixel[1]/255)*255, round(pixel[2]/255)*255])
 
 solve.processImage(pixels,byte_width,w,h,process)
+
+
+print("Solving the grid")
+grid_key = "20181002"
+grid_message = "511 B20 332 328 410 530 22B 0FE 52E D0F 7A1 65B 52C 7E7 511 2F6 56F C4B"
+grid_shifted = solve.shiftKey(grid_message, grid_key)
+grid_numbers = [int(grid_shifted[i:i+4],16) for i in range(0,len(grid_shifted),4)][6:]
+grid_words = ' '.join([solve.lookupBip36(n) for n in grid_numbers])
+
+print(f"{grid_message} ->\n{grid_shifted} ->\n{grid_numbers} ->\n{grid_words}")
 
 
 print("Saving steganography image")
@@ -57,3 +67,4 @@ print(row310_message)
 print("Done")
 
 # L503K7CF64C120E89D9D4
+# 310 -> chase

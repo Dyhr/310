@@ -1,4 +1,4 @@
-import png, hashlib
+import png, hashlib, linecache
 
 
 def loadImage(path):
@@ -36,3 +36,19 @@ def mask(pixel, mask):
         return [(255-pixel[i]) & int(mask[i],2) for i in range(0,len(pixel))]
     else:
         return None
+
+def shiftKey(message, key):
+    result = []
+    shift = 0
+    for c in message:
+        if c == ' ':
+            result.append(' ')
+            continue
+        shift_amount = int(key[shift])
+        shift = (shift + 1) % len(key)
+        res = (int(c,16) - shift_amount) % 16
+        result.append(hex(res)[2:])
+    return ''.join(result)
+
+def lookupBip36(index):
+    return linecache.getline('english.txt', index)[:-1]
